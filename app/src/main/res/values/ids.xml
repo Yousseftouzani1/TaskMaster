@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="loginButton" type="id" />
+    <item name="passwordLayout" type="id" />
+    <item name="registerLink" type="id" />
+    <item name="passwordEditText" type="id" />
+    <item name="emailLayout" type="id" />
+    <item name="emailEditText" type="id" />
+    <item name="appTitle" type="id" />
+    <item name="logoImage" type="id" />
+    <item name="loginPage" type="id" />
+    <item name="registerButton" type="id" />
+    <item name="confirmPasswordLayout" type="id" />
+    <item name="confirmPasswordEditText" type="id" />
+    <item name="lastNameLayout" type="id" />
+    <item name="lastNameEditText" type="id" />
+    <item name="firstNameLayout" type="id" />
+    <item name="firstNameEditText" type="id" />
+</resources>

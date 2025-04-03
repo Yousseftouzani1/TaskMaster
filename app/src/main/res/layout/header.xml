@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:orientation="vertical"
+    android:background="@color/fond_background"
+    android:gravity="bottom"
+    android:padding="24dp">
+
+    <!-- Optional icon (like app logo or avatar) -->
+    <ImageView
+        android:id="@+id/header_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="12dp"
+        android:src="@android:drawable/sym_def_app_icon"
+        android:contentDescription="App Icon" />
+
+    <!-- App name -->
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task Master"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif-medium" />
+
+</LinearLayout>
