@@ -2,5 +2,27 @@
     <string name="app_name">Devmob</string>
     <string name="navigation_drawer_open">Ouvrir le menu</string>
     <string name="navigation_drawer_close">Fermer le menu</string>
+    <string name="choose_priority">Choisir une priorité</string>
+    <string name="choose_status">Choisir un statut</string>
+    <string name="choose_recurrence">Fréquence</string>
+
+    <string-array name="priorities">
+        <item>Haute</item>
+        <item>Moyenne</item>
+        <item>Basse</item>
+    </string-array>
+
+    <string-array name="statuses">
+        <item>À faire</item>
+        <item>En cours</item>
+        <item>Fait</item>
+    </string-array>
+
+    <string-array name="recurrence_options">
+        <item>Aucune</item>
+        <item>Quotidien</item>
+        <item>Hebdomadaire</item>
+    </string-array>
+
 
 </resources>

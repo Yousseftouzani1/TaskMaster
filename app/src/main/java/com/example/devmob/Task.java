@@ -33,6 +33,10 @@ public class Task {
     private String userFeedback;
 
     // Constructor
+    public Task() {
+        // Required empty constructor for Firebase deserialization
+    }
+
     public Task(String title, String description, Date dueDate,
                 String priorityLevel, String status, List<String> attachments,
                 List<String> comments, long timeSpentMinutes, boolean remindersEnabled,
@@ -75,7 +79,7 @@ public class Task {
     public Date getCreatedDate() { return createdDate; }
     public Date getLastUpdatedDate() { return lastUpdatedDate; }
     public String getRecurrencePattern() { return recurrencePattern; }
-    public List<Task> getDependencies() { return dependencies; }
+    public List<Task> getDependencies() { return dependencies; }// tasks that this task depend on
     public int getProgressPercent() { return progressPercent; }
     public boolean isCalendarSynced() { return calendarSynced; }
     public String getPerformanceSummary() { return performanceSummary; }
@@ -100,4 +104,8 @@ public class Task {
     public void setCalendarSynced(boolean calendarSynced) { this.calendarSynced = calendarSynced; }
     public void setPerformanceSummary(String performanceSummary) { this.performanceSummary = performanceSummary; }
     public void setUserFeedback(String userFeedback) { this.userFeedback = userFeedback; }
+    // function to
+
+
+
 }

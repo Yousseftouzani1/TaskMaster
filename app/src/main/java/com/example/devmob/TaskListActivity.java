@@ -17,6 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,39 +82,39 @@ public class TaskListActivity extends AppCompatActivity {
             return true;
         });
 
-
-        // Exemple de tâche
+// read from realtime database instance in firebase
         taskList = new ArrayList<>();
-        taskList.add(new Task(
-                "Write Report",
-                "Write the monthly financial report",
-                new Date(),
-                "High",
-                "To Do",
-                new ArrayList<>(),
-                new ArrayList<>(),
-                0,
-                true,
-                List.of("Urgent", "Finance"),
-                new Date(),
-                new Date(),
-                "None",
-                new ArrayList<>(),
-                20,
-                true,
-                "On Track",
-                "All good"
-        ));
+
+        DatabaseReference tasksRef = FirebaseDatabase.getInstance().getReference("tasks");
+
+        tasksRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                taskList.clear();
+                for (DataSnapshot taskSnapshot : snapshot.getChildren()) {
+                    Task task = taskSnapshot.getValue(Task.class);
+                    if (task != null) {
+                        taskList.add(task);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(TaskListActivity.this, "Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Adapter
         adapter = new TaskAdapter(task -> {
             Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
-            intent.putExtra("task_title", task.getTitle());
-            intent.putExtra("task_description", task.getDescription());
+            intent.putExtra("title", task.getTitle());
+            intent.putExtra("description", task.getDescription());
             intent.putExtra("task_status", task.getStatus());
             intent.putExtra("task_priority", task.getPriorityLevel());
-            intent.putExtra("task_due_date", task.getDueDate().getTime());
-            intent.putExtra("task_progress", task.getProgressPercent());
+            intent.putExtra("dueDate", task.getDueDate().getTime());
+            intent.putExtra("progressPercent", task.getProgressPercent());
             startActivity(intent);
         }, taskList);
 
@@ -132,10 +137,12 @@ public class TaskListActivity extends AppCompatActivity {
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        // FAB click
-        fabAdd.setOnClickListener(v ->
-                Toast.makeText(this, "Ajouter une tâche", Toast.LENGTH_SHORT).show()
-        );
+        // FAB click oppens the buttom sheet
+        fabAdd.setOnClickListener(v -> {
+            TaskCreationBottomSheet bottomSheet = new TaskCreationBottomSheet();
+            bottomSheet.show(getSupportFragmentManager(), "TaskCreationBottomSheet");
+        });
+
     }
 
     // Gérer le bouton retour quand le drawer est ouvert
