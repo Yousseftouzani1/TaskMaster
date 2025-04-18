@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,8 +38,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = taskList.get(position);
         holder.title.setText(task.getTitle());
-        holder.label.setText(task.getTags() != null && !task.getTags().isEmpty() ? task.getTags().get(0) : "No Label");
-        holder.dueDate.setText(task.getDueDate() != null ? dateFormat.format(task.getDueDate()) : "No Due Date");
+        holder.label.setText(task.getDescription() != null && !task.getDescription().isEmpty() ? task.getDescription() : "No description");
+        holder.dueDate.setText(task.getDueDate() > 0
+                ? dateFormat.format(new Date(task.getDueDate()))
+                : "No Due Date");
     }
 
     @Override

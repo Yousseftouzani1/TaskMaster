@@ -7,7 +7,7 @@ public class Task {
     // Basic Task Details
     private String title;
     private String description;
-    private Date dueDate;
+    private Long dueDate;
     private String priorityLevel;
     private String status;
 
@@ -37,7 +37,7 @@ public class Task {
         // Required empty constructor for Firebase deserialization
     }
 
-    public Task(String title, String description, Date dueDate,
+    public Task(String title, String description, long dueDate,
                 String priorityLevel, String status, List<String> attachments,
                 List<String> comments, long timeSpentMinutes, boolean remindersEnabled,
                 List<String> tags, Date createdDate, Date lastUpdatedDate,
@@ -68,7 +68,9 @@ public class Task {
     // Getters
     public String getTitle() { return title; }
     public String getDescription() { return description; }
-    public Date getDueDate() { return dueDate; }
+    public long getDueDate() {
+        return dueDate;
+    }
     public String getPriorityLevel() { return priorityLevel; }
     public String getStatus() { return status; }
     public List<String> getAttachments() { return attachments; }
@@ -88,7 +90,7 @@ public class Task {
     // Setters
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
-    public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
+    public void setDueDate(long dueDate ) { this.dueDate = dueDate; }
     public void setPriorityLevel(String priorityLevel) { this.priorityLevel = priorityLevel; }
     public void setStatus(String status) { this.status = status; }
     public void setAttachments(List<String> attachments) { this.attachments = attachments; }

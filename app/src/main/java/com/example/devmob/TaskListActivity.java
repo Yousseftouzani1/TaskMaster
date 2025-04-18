@@ -113,7 +113,7 @@ public class TaskListActivity extends AppCompatActivity {
             intent.putExtra("description", task.getDescription());
             intent.putExtra("task_status", task.getStatus());
             intent.putExtra("task_priority", task.getPriorityLevel());
-            intent.putExtra("dueDate", task.getDueDate().getTime());
+            intent.putExtra("dueDate", task.getDueDate());
             intent.putExtra("progressPercent", task.getProgressPercent());
             startActivity(intent);
         }, taskList);
