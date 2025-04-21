@@ -42,6 +42,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.dueDate.setText(task.getDueDate() > 0
                 ? dateFormat.format(new Date(task.getDueDate()))
                 : "No Due Date");
+        holder.itemView.setOnClickListener(v -> listener.onTaskClick(task));
+
     }
 
     @Override

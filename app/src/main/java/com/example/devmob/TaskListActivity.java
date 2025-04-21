@@ -74,6 +74,8 @@ public class TaskListActivity extends AppCompatActivity {
                 Toast.makeText(this, "Calendrier", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.nav_priority) {
                 Toast.makeText(this, "Priorités", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TaskListActivity.this, AIResponseActivity.class);
+                startActivity(intent);
             } else if (id == R.id.nav_stats) {
                 Toast.makeText(this, "Statistiques", Toast.LENGTH_SHORT).show();
             }
@@ -81,6 +83,7 @@ public class TaskListActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
+
 
 // read from realtime database instance in firebase
         taskList = new ArrayList<>();
@@ -117,6 +120,7 @@ public class TaskListActivity extends AppCompatActivity {
             intent.putExtra("progressPercent", task.getProgressPercent());
             startActivity(intent);
         }, taskList);
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
