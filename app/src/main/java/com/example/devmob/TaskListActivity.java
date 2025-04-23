@@ -78,6 +78,8 @@ public class TaskListActivity extends AppCompatActivity {
                 startActivity(intent);
             } else if (id == R.id.nav_stats) {
                 Toast.makeText(this, "Statistiques", Toast.LENGTH_SHORT).show();
+                Intent intent1 = new Intent(TaskListActivity.this, StatsActivity.class);
+                startActivity(intent1);
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
