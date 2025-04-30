@@ -23,6 +23,10 @@
         <item>Quotidien</item>
         <item>Hebdomadaire</item>
     </string-array>
+    <string name="default_web_client_id">
+        467718674232-lqd5vd7b7jeddvmermv0nb6bj098d8k0.apps.googleusercontent.com
+    </string>
+
 
 
 </resources>
