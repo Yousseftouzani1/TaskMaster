@@ -16,6 +16,7 @@ public class Task {
     private List<String> comments;
     private long timeSpentMinutes; // total time spent in minutes
     private boolean remindersEnabled;
+    private boolean isfinished;
     private List<String> tags;
 
     // Timestamps
@@ -63,8 +64,14 @@ public class Task {
         this.calendarSynced = calendarSynced;
         this.performanceSummary = performanceSummary;
         this.userFeedback = userFeedback;
+        this.isfinished=false;
     }
-
+public boolean getfinished(){
+        return this.isfinished;
+}
+public void markfinished(){
+        this.isfinished=true;
+}
     // Getters
     public String getTitle() { return title; }
     public String getDescription() { return description; }

@@ -105,7 +105,7 @@ public class TaskListActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(TaskListActivity.this, "Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TaskListActivity.this, " Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -119,6 +119,7 @@ public class TaskListActivity extends AppCompatActivity {
             intent.putExtra("dueDate", task.getDueDate());
             intent.putExtra("progressPercent", task.getProgressPercent());
             startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }, taskList);
 
 
