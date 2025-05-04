@@ -97,9 +97,14 @@ public class TaskListActivity extends AppCompatActivity {
                 for (DataSnapshot taskSnapshot : snapshot.getChildren()) {
                     Task task = taskSnapshot.getValue(Task.class);
                     if (task != null) {
-                        taskList.add(task);
+                        task.setId(taskSnapshot.getKey()); //  set Firebase key as ID
+                        if(!task.getfinished()){
+                            taskList.add(task);
+                        }
+
                     }
                 }
+
                 adapter.notifyDataSetChanged();
             }
 
@@ -112,12 +117,15 @@ public class TaskListActivity extends AppCompatActivity {
         // Adapter
         adapter = new TaskAdapter(task -> {
             Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
+
             intent.putExtra("title", task.getTitle());
             intent.putExtra("description", task.getDescription());
             intent.putExtra("task_status", task.getStatus());
             intent.putExtra("task_priority", task.getPriorityLevel());
             intent.putExtra("dueDate", task.getDueDate());
             intent.putExtra("progressPercent", task.getProgressPercent());
+            intent.putExtra("finished", task.getfinished());
+            intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }, taskList);

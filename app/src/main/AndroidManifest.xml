@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Devmob"
         tools:targetApi="31">
         <activity
+            android:name=".deadlineManager.DeadlineActivity"
+            android:exported="false" />
+        <activity
             android:name=".AIResponseActivity"
             android:exported="false" />
         <activity

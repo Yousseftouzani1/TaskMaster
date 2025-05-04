@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,13 +16,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 public class TaskDetailActivity extends AppCompatActivity {
 
-    private TextView taskTitle, taskStatus, taskPriority, taskDueDate, taskDescription, taskFeedback;
+    private TextView taskTitle, taskStatus, taskPriority, taskDueDate, taskDescription;
     private ProgressBar taskProgressBar;
     private ChipGroup taskTags;
-    private Button joinMeetingButton;
+    private Button finishedbutton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,10 +36,11 @@ public class TaskDetailActivity extends AppCompatActivity {
         taskPriority = findViewById(R.id.taskPriority);
         taskDueDate = findViewById(R.id.taskDueDate);
         taskDescription = findViewById(R.id.taskDescription);
-        taskFeedback = findViewById(R.id.taskFeedback);
+
         taskProgressBar = findViewById(R.id.taskProgressBar);
         taskTags = findViewById(R.id.taskTags);
-        joinMeetingButton = findViewById(R.id.finished);
+        finishedbutton = findViewById(R.id.finished);
+        String taskId = getIntent().getStringExtra("taskId");
 
         // Receive task data from intent
         String title = getIntent().getStringExtra("title");
@@ -46,7 +49,6 @@ public class TaskDetailActivity extends AppCompatActivity {
         String priority = getIntent().getStringExtra("task_priority");
         long dueDateMillis = getIntent().getLongExtra("dueDate", 0);
         int progress = getIntent().getIntExtra("progressPercent", 0);
-        String feedback = getIntent().getStringExtra("feedback");
         List<String> tags = getIntent().getStringArrayListExtra("tags");
 
         // Populate views
@@ -55,11 +57,7 @@ public class TaskDetailActivity extends AppCompatActivity {
         taskPriority.setText(priority != null ? priority : "Normal");
         taskDescription.setText(description != null ? description : "No description");
 
-        if (feedback != null && !feedback.isEmpty()) {
-            taskFeedback.setText(feedback);
-        } else {
-            taskFeedback.setText("No feedback available");
-        }
+
 
         // Format and set due date
         if (dueDateMillis > 0) {
@@ -84,9 +82,29 @@ public class TaskDetailActivity extends AppCompatActivity {
         }
 
         // Handle finish button click (for now just disable)
-        joinMeetingButton.setOnClickListener(v -> {
-            joinMeetingButton.setEnabled(false);
-            joinMeetingButton.setText("Marked as Done");
+        finishedbutton.setOnClickListener(v -> {
+            if (taskId != null && !taskId.isEmpty()) {
+                DatabaseReference taskRef = FirebaseDatabase.getInstance()
+                        .getReference("tasks")
+                        .child(taskId);
+                // Get today's date
+                String today = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new Date());
+                taskRef.child("finishedDate").setValue(today);
+                taskRef.child("isfinished").setValue(true)
+                        .addOnSuccessListener(aVoid -> {
+                            finishedbutton.setText("Task marked as done");
+                            Toast.makeText(this, "Task successfully marked as done", Toast.LENGTH_SHORT).show();
+                            finishedbutton.setEnabled(false); // Immediately disable to avoid multiple clicks
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            finishedbutton.setText("Failed to update");
+                        });
+
+            } else {
+                finishedbutton.setText("No task ID");
+            }
         });
+
     }
 }

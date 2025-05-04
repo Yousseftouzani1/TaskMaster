@@ -35,7 +35,7 @@ public class FirebaseTaskReader {
                     }
                 }
 
-                String resultString = jsonArray.toString(); // ← ✅ converted to plain Java String
+                String resultString = jsonArray.toString(); // converted to plain Java String
                 listener.onSuccess(resultString);
             }
 

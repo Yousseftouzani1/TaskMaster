@@ -8,8 +8,11 @@
     android:padding="16dp">
 
     <LinearLayout
+        android:outlineSpotShadowColor="@color/fond"
+        android:padding="40dp"
+        android:layout_marginTop="70dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <!-- Header -->
@@ -108,23 +111,6 @@
             android:progressTint="#2196F3"
             android:layout_marginBottom="16dp" />
 
-        <!-- Comments or Feedback -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:id="@+id/taskFeedback"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="User feedback and performance notes here..."
-                android:textColor="#616161"
-                android:textSize="14sp" />
-        </androidx.cardview.widget.CardView>
 
         <!-- Meeting or Reminder Button -->
         <Button
