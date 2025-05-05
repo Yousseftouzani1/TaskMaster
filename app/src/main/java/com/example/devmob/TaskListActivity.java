@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.devmob.deadlineManager.DeadlineActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -78,6 +79,10 @@ public class TaskListActivity extends AppCompatActivity {
                 startActivity(intent);
             } else if (id == R.id.nav_stats) {
                 Toast.makeText(this, "Statistiques", Toast.LENGTH_SHORT).show();
+            }else if (id == R.id.nav_deadline) {
+                Toast.makeText(this, "Deadlines", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TaskListActivity.this, DeadlineActivity.class);
+                startActivity(intent);
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);

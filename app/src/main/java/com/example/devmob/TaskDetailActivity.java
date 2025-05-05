@@ -102,7 +102,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                         });
 
             } else {
-                finishedbutton.setText("No task ID");
+                finishedbutton.setText("Marked as finished ");
             }
         });
 
