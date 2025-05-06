@@ -11,7 +11,7 @@ import okhttp3.*;
 public class AIRequest {
 
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
-    private static final String API_KEY = "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 "; // put your real key here
+    private static final String API_KEY = "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 ";
 
     public interface SuggestionCallback {
         void onSuccess(String suggestion);

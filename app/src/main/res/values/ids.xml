@@ -30,4 +30,5 @@
     <item name="switch_calendar_sync" type="id" />
     <item name="btn_save" type="id" />
     <item name="edit_tag_input" type="id" />
+    <item name="ai_card" type="id" />
 </resources>

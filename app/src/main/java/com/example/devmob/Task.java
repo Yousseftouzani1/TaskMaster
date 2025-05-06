@@ -16,6 +16,7 @@ public class Task {
     private List<String> comments;
     private long timeSpentMinutes; // total time spent in minutes
     private boolean remindersEnabled;
+    private boolean isfinished;
     private List<String> tags;
 
     // Timestamps
@@ -26,25 +27,25 @@ public class Task {
     private String recurrencePattern; // e.g., "Daily", "Weekly", "None"
     private List<Task> dependencies; // other tasks this one depends on
     private int progressPercent; // from 0 to 100
-
+private long finishedDate;
     // Integration & Feedback
     private boolean calendarSynced;
     private String performanceSummary;
     private String userFeedback;
-
+    private String id;
     // Constructor
     public Task() {
         // Required empty constructor for Firebase deserialization
     }
 
-    public Task(String title, String description, long dueDate,
+    public Task(String id,String title, String description, long dueDate,
                 String priorityLevel, String status, List<String> attachments,
                 List<String> comments, long timeSpentMinutes, boolean remindersEnabled,
                 List<String> tags, Date createdDate, Date lastUpdatedDate,
                 String recurrencePattern, List<Task> dependencies,
                 int progressPercent, boolean calendarSynced,
                 String performanceSummary, String userFeedback) {
-
+this.id=id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
@@ -63,8 +64,29 @@ public class Task {
         this.calendarSynced = calendarSynced;
         this.performanceSummary = performanceSummary;
         this.userFeedback = userFeedback;
+        this.isfinished=false;
+    }
+    public long getFinishedDate(){
+        return this.finishedDate;
+    }
+    public void setFinishedDate(long date){
+        this.finishedDate=date;
+    }
+public boolean getfinished(){
+        return this.isfinished;
+}
+public void markfinished(){
+        this.isfinished=true;
+}
+
+
+    public String getId() {
+        return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
     // Getters
     public String getTitle() { return title; }
     public String getDescription() { return description; }
@@ -106,6 +128,8 @@ public class Task {
     public void setCalendarSynced(boolean calendarSynced) { this.calendarSynced = calendarSynced; }
     public void setPerformanceSummary(String performanceSummary) { this.performanceSummary = performanceSummary; }
     public void setUserFeedback(String userFeedback) { this.userFeedback = userFeedback; }
+
+
     // function to
 
 

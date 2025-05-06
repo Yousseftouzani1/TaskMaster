@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.devmob.deadlineManager.DeadlineActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -78,8 +79,10 @@ public class TaskListActivity extends AppCompatActivity {
                 startActivity(intent);
             } else if (id == R.id.nav_stats) {
                 Toast.makeText(this, "Statistiques", Toast.LENGTH_SHORT).show();
-                Intent intent1 = new Intent(TaskListActivity.this, StatsActivity.class);
-                startActivity(intent1);
+            }else if (id == R.id.nav_deadline) {
+                Toast.makeText(this, "Deadlines", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TaskListActivity.this, DeadlineActivity.class);
+                startActivity(intent);
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -99,28 +102,37 @@ public class TaskListActivity extends AppCompatActivity {
                 for (DataSnapshot taskSnapshot : snapshot.getChildren()) {
                     Task task = taskSnapshot.getValue(Task.class);
                     if (task != null) {
-                        taskList.add(task);
+                        task.setId(taskSnapshot.getKey()); //  set Firebase key as ID
+                        if(!task.getfinished()){
+                            taskList.add(task);
+                        }
+
                     }
                 }
+
                 adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(TaskListActivity.this, "Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TaskListActivity.this, " Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
         // Adapter
         adapter = new TaskAdapter(task -> {
             Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
+
             intent.putExtra("title", task.getTitle());
             intent.putExtra("description", task.getDescription());
             intent.putExtra("task_status", task.getStatus());
             intent.putExtra("task_priority", task.getPriorityLevel());
             intent.putExtra("dueDate", task.getDueDate());
             intent.putExtra("progressPercent", task.getProgressPercent());
+            intent.putExtra("finished", task.getfinished());
+            intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
             startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }, taskList);
 
 

@@ -1,10 +1,12 @@
 package com.example.devmob;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,14 +24,20 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
 
-    private TextInputEditText editTitle, editDescription, editDueDate, editTimeSpent, editTagInput;
+    private TextInputEditText editTitle, editDescription, editTimeSpent, editTagInput;
+    private EditText editDueDate;
+    private Calendar selectedDate;
+    private String formattedDate;
     private Slider seekProgress;
     private MaterialSwitch switchReminder, switchCalendar;
     private MaterialButton btnSave, btnAddTag;
@@ -50,6 +58,32 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
         editDescription = view.findViewById(R.id.edit_description);
         editTimeSpent = view.findViewById(R.id.edit_time_spent);
         editTagInput = view.findViewById(R.id.edit_tag_input);
+        editDueDate = view.findViewById(R.id.edit_due_date);
+        editDueDate = view.findViewById(R.id.edit_due_date);
+
+// ⬇️ Add this right here
+        editDueDate.setOnClickListener(v -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    requireContext(),
+                    (view1, selectedYear, selectedMonth, selectedDay) -> {
+                        selectedDate = Calendar.getInstance();
+                        selectedDate.set(selectedYear, selectedMonth, selectedDay);
+
+                        // Format the date
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                        formattedDate = sdf.format(selectedDate.getTime());
+                        editDueDate.setText(formattedDate);
+                    },
+                    year, month, day
+            );
+
+            datePickerDialog.show(); // ✅ important!
+        });
 
         seekProgress = view.findViewById(R.id.seek_progress);
         switchReminder = view.findViewById(R.id.switch_reminder);
@@ -119,6 +153,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             Map<String, Object> taskData = new HashMap<>();
             String recurrence = spinnerRecurrence.getText().toString().trim();
             String priority = spinnerPriority.getText().toString().trim();
+
             taskData.put("recurrence", recurrence);
             taskData.put("priority", priority);
             taskData.put("id", taskId);
@@ -130,7 +165,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             taskData.put("timeSpent", timeSpent);
             taskData.put("tags", tags);
             taskData.put("createdAt", new Date().getTime());
-            taskData.put("dueDate",new Date().getTime());
+            taskData.put("dueDate", selectedDate != null ? selectedDate.getTimeInMillis() : null);
 
             assert taskId != null;
             tasksRef.child(taskId).setValue(taskData)
@@ -145,7 +180,6 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
 
         return view;
     }
-
     private int getIntFromEditText(TextInputEditText editText) {
         try {
             return Integer.parseInt(editText.getText().toString().trim());
