@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -93,26 +94,26 @@ public class TaskListActivity extends AppCompatActivity {
 // read from realtime database instance in firebase
         taskList = new ArrayList<>();
 
-        DatabaseReference tasksRef = FirebaseDatabase.getInstance().getReference("tasks");
+// Query only tasks where isfinished == false
+        Query tasksQuery = FirebaseDatabase.getInstance()
+                .getReference("tasks")
+                .orderByChild("isfinished")
+                .equalTo(false);
 
-        tasksRef.addValueEventListener(new ValueEventListener() {
+        tasksQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 taskList.clear();
                 for (DataSnapshot taskSnapshot : snapshot.getChildren()) {
                     Task task = taskSnapshot.getValue(Task.class);
                     if (task != null) {
-                        task.setId(taskSnapshot.getKey()); //  set Firebase key as ID
-                        if(!task.getfinished()){
-                            taskList.add(task);
-                        }
-
+                        // Set Firebase key as the task ID
+                        task.setId(taskSnapshot.getKey());
+                        taskList.add(task); // No need to check getfinished() again
                     }
                 }
-
                 adapter.notifyDataSetChanged();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(TaskListActivity.this, " Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -131,6 +132,7 @@ public class TaskListActivity extends AppCompatActivity {
             intent.putExtra("progressPercent", task.getProgressPercent());
             intent.putExtra("finished", task.getfinished());
             intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
+            intent.putExtra("taskId", task.getId()); // ← YOU NEED THIS!
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }, taskList);

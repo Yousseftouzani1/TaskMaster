@@ -44,7 +44,7 @@ private long finishedDate;
                 List<String> tags, Date createdDate, Date lastUpdatedDate,
                 String recurrencePattern, List<Task> dependencies,
                 int progressPercent, boolean calendarSynced,
-                String performanceSummary, String userFeedback) {
+                String performanceSummary, String userFeedback,long finishedate) {
 this.id=id;
         this.title = title;
         this.description = description;
@@ -65,6 +65,7 @@ this.id=id;
         this.performanceSummary = performanceSummary;
         this.userFeedback = userFeedback;
         this.isfinished=false;
+        this.finishedDate=finishedate;
     }
     public long getFinishedDate(){
         return this.finishedDate;
