@@ -166,6 +166,8 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             taskData.put("tags", tags);
             taskData.put("createdAt", new Date().getTime());
             taskData.put("dueDate", selectedDate != null ? selectedDate.getTimeInMillis() : null);
+            taskData.put("isfinished", false);
+            taskData.put("finishedDate", 124589);
 
             assert taskId != null;
             tasksRef.child(taskId).setValue(taskData)

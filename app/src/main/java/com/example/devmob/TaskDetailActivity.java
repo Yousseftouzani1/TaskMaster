@@ -1,6 +1,7 @@
 package com.example.devmob;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -14,8 +15,11 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 public class TaskDetailActivity extends AppCompatActivity {
@@ -87,24 +91,30 @@ public class TaskDetailActivity extends AppCompatActivity {
                 DatabaseReference taskRef = FirebaseDatabase.getInstance()
                         .getReference("tasks")
                         .child(taskId);
-                // Get today's date
-                String today = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new Date());
-                taskRef.child("finishedDate").setValue(today);
-                taskRef.child("isfinished").setValue(true)
+
+                long finishedAt = System.currentTimeMillis(); // better than string date
+
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("finishedDate", finishedAt);
+                updates.put("isfinished", true);
+
+                taskRef.updateChildren(updates)
                         .addOnSuccessListener(aVoid -> {
                             finishedbutton.setText("Task marked as done");
                             Toast.makeText(this, "Task successfully marked as done", Toast.LENGTH_SHORT).show();
-                            finishedbutton.setEnabled(false); // Immediately disable to avoid multiple clicks
+                            finishedbutton.setEnabled(false);
                             finish();
                         })
                         .addOnFailureListener(e -> {
                             finishedbutton.setText("Failed to update");
+                            Log.e("FirebaseUpdate", "Error: " + e.getMessage());
                         });
-
             } else {
-                finishedbutton.setText("Marked as finished ");
+                finishedbutton.setText("Marked as finished (Invalid ID)");
+                Log.e("TaskUpdate", "Invalid task ID: " + taskId);
             }
         });
+
 
     }
 }

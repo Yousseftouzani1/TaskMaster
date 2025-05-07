@@ -4,8 +4,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
-    android:padding="16dp">
+    android:background="@color/fond"
+    android:padding="4dp">
 
     <LinearLayout
         android:outlineSpotShadowColor="@color/fond"
@@ -13,6 +13,7 @@
         android:layout_marginTop="70dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         android:orientation="vertical">
 
         <!-- Header -->
