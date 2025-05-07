@@ -98,6 +98,11 @@ public class TaskDeadlineAdapter extends RecyclerView.Adapter<TaskDeadlineAdapte
                                 .getReference("tasks")
                                 .child(task.getId());
                         ref.child("progressPercent").setValue(newProgress);
+                        if (newProgress==100){
+                            task.markfinished();
+                            long finishedAt = System.currentTimeMillis(); // better than string date
+                             task.setFinishedDate(finishedAt);
+                        }
                     }
                 }
             });
