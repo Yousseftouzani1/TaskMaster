@@ -131,7 +131,11 @@ public class TaskListActivity extends AppCompatActivity {
             intent.putExtra("dueDate", task.getDueDate());
             intent.putExtra("progressPercent", task.getProgressPercent());
             intent.putExtra("finished", task.getfinished());
-            intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
+            if (task.getTags() != null) {
+                intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
+            } else {
+                intent.putStringArrayListExtra("tags", new ArrayList<>()); // send empty list to prevent crash
+            }
             intent.putExtra("taskId", task.getId()); // ← YOU NEED THIS!
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

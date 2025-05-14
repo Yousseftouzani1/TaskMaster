@@ -68,6 +68,7 @@
                     android:textSize="18sp"
                     android:textColor="#212121"
                     android:textStyle="normal"
+
                     android:lineSpacingExtra="6dp"
                     android:textAlignment="center" />
 
