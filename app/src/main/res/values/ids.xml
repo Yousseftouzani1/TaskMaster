@@ -31,4 +31,10 @@
     <item name="btn_save" type="id" />
     <item name="edit_tag_input" type="id" />
     <item name="ai_card" type="id" />
+    <item name="task_title" type="id" />
+    <item name="task_due_date" type="id" />
+    <item name="task_label" type="id" />
+    <item name="navigation_view" type="id" />
+    <item name="recyclerView" type="id" />
+    <item name="fab_add_task" type="id" />
 </resources>

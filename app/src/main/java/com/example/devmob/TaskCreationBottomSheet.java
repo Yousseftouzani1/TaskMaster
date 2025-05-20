@@ -59,9 +59,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
         editTimeSpent = view.findViewById(R.id.edit_time_spent);
         editTagInput = view.findViewById(R.id.edit_tag_input);
         editDueDate = view.findViewById(R.id.edit_due_date);
-        editDueDate = view.findViewById(R.id.edit_due_date);
 
-// ⬇️ Add this right here
         editDueDate.setOnClickListener(v -> {
             final Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
@@ -82,7 +80,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
                     year, month, day
             );
 
-            datePickerDialog.show(); // ✅ important!
+            datePickerDialog.show();
         });
 
         seekProgress = view.findViewById(R.id.seek_progress);
@@ -95,7 +93,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
         MaterialAutoCompleteTextView spinnerRecurrence = view.findViewById(R.id.spinner_recurrence);
         MaterialAutoCompleteTextView spinnerPriority = view.findViewById(R.id.spinner_priority);
 
-// Recurrence options
+        // Recurrence options
         String[] recurrenceOptions = new String[] {
                 "Aucune", "Quotidienne", "Hebdomadaire", "Mensuelle", "Annuelle"
         };
@@ -103,7 +101,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
                 requireContext(), android.R.layout.simple_dropdown_item_1line, recurrenceOptions);
         spinnerRecurrence.setAdapter(recurrenceAdapter);
 
-// Priority options
+        // Priority options
         String[] priorityOptions = new String[] {
                 "Basse", "Moyenne", "Haute", "Critique"
         };
@@ -111,7 +109,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
                 requireContext(), android.R.layout.simple_dropdown_item_1line, priorityOptions);
         spinnerPriority.setAdapter(priorityAdapter);
 
-// Optional: show dropdown on click
+        // Optional: show dropdown on click
         spinnerRecurrence.setOnClickListener(v -> spinnerRecurrence.showDropDown());
         spinnerPriority.setOnClickListener(v -> spinnerPriority.showDropDown());
 
@@ -154,6 +152,9 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             String recurrence = spinnerRecurrence.getText().toString().trim();
             String priority = spinnerPriority.getText().toString().trim();
 
+            long currentTime = System.currentTimeMillis();
+            long dueDateMillis = selectedDate != null ? selectedDate.getTimeInMillis() : 0;
+
             taskData.put("recurrence", recurrence);
             taskData.put("priority", priority);
             taskData.put("id", taskId);
@@ -164,10 +165,11 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             taskData.put("calendarSync", calendar);
             taskData.put("timeSpent", timeSpent);
             taskData.put("tags", tags);
-            taskData.put("createdAt", new Date().getTime());
-            taskData.put("dueDate", selectedDate != null ? selectedDate.getTimeInMillis() : null);
+            taskData.put("createdDate", currentTime);
+            taskData.put("lastUpdatedDate", currentTime);
+            taskData.put("dueDate", dueDateMillis);
             taskData.put("isfinished", false);
-            taskData.put("finishedDate", 124589);
+            taskData.put("finishedDate", 0L);
 
             assert taskId != null;
             tasksRef.child(taskId).setValue(taskData)
@@ -182,6 +184,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
 
         return view;
     }
+
     private int getIntFromEditText(TextInputEditText editText) {
         try {
             return Integer.parseInt(editText.getText().toString().trim());
