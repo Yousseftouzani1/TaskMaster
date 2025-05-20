@@ -20,8 +20,10 @@ public class Task {
     private List<String> tags;
 
     // Timestamps
-    private Date createdDate;
-    private Date lastUpdatedDate;
+
+   
+    private Long createdDate;
+    private Long lastUpdatedDate;
 
     // Recurring & Dependency
     private String recurrencePattern; // e.g., "Daily", "Weekly", "None"
@@ -29,7 +31,24 @@ public class Task {
     private int progressPercent; // from 0 to 100
 private long finishedDate;
     // Integration & Feedback
-    private boolean calendarSynced;
+    private boolean calendarSync;
+
+    public void setDueDate(Long dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public boolean isIsfinished() {
+        return isfinished;
+    }
+
+    public void setIsfinished(boolean isfinished) {
+        this.isfinished = isfinished;
+    }
+
+
+
+
+
     private String performanceSummary;
     private String userFeedback;
     private String id;
@@ -43,7 +62,7 @@ private long finishedDate;
                 List<String> comments, long timeSpentMinutes, boolean remindersEnabled,
                 List<String> tags, Date createdDate, Date lastUpdatedDate,
                 String recurrencePattern, List<Task> dependencies,
-                int progressPercent, boolean calendarSynced,
+                int progressPercent, boolean calendarSync,
                 String performanceSummary, String userFeedback,long finishedate) {
 this.id=id;
         this.title = title;
@@ -56,12 +75,12 @@ this.id=id;
         this.timeSpentMinutes = timeSpentMinutes;
         this.remindersEnabled = remindersEnabled;
         this.tags = tags;
-        this.createdDate = createdDate;
-        this.lastUpdatedDate = lastUpdatedDate;
+        this.createdDate = createdDate.getTime();
+        this.lastUpdatedDate = lastUpdatedDate.getTime();
         this.recurrencePattern = recurrencePattern;
         this.dependencies = dependencies;
         this.progressPercent = progressPercent;
-        this.calendarSynced = calendarSynced;
+        this.calendarSync = calendarSync;
         this.performanceSummary = performanceSummary;
         this.userFeedback = userFeedback;
         this.isfinished=false;
@@ -101,19 +120,23 @@ public void markfinished(){
     public long getTimeSpentMinutes() { return timeSpentMinutes; }
     public boolean isRemindersEnabled() { return remindersEnabled; }
     public List<String> getTags() { return tags; }
-    public Date getCreatedDate() { return createdDate; }
-    public Date getLastUpdatedDate() { return lastUpdatedDate; }
+    public Date getCreatedDate() {
+        return createdDate != null ? new Date(createdDate) : null;
+    }
+    public Date getLastUpdatedDate() {
+        return lastUpdatedDate != null ? new Date(lastUpdatedDate) : null;
+    }
     public String getRecurrencePattern() { return recurrencePattern; }
     public List<Task> getDependencies() { return dependencies; }// tasks that this task depend on
     public int getProgressPercent() { return progressPercent; }
-    public boolean isCalendarSynced() { return calendarSynced; }
+    public boolean isCalendarSync() { return calendarSync; }
     public String getPerformanceSummary() { return performanceSummary; }
     public String getUserFeedback() { return userFeedback; }
 
     // Setters
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
-    public void setDueDate(long dueDate ) { this.dueDate = dueDate; }
+
     public void setPriorityLevel(String priorityLevel) { this.priorityLevel = priorityLevel; }
     public void setStatus(String status) { this.status = status; }
     public void setAttachments(List<String> attachments) { this.attachments = attachments; }
@@ -121,12 +144,12 @@ public void markfinished(){
     public void setTimeSpentMinutes(long timeSpentMinutes) { this.timeSpentMinutes = timeSpentMinutes; }
     public void setRemindersEnabled(boolean remindersEnabled) { this.remindersEnabled = remindersEnabled; }
     public void setTags(List<String> tags) { this.tags = tags; }
-    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
-    public void setLastUpdatedDate(Date lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
+    public void setCreatedDate(long createdDate) { this.createdDate = createdDate; }
+    public void setLastUpdatedDate(long lastUpdatedDate) { this.lastUpdatedDate = lastUpdatedDate; }
     public void setRecurrencePattern(String recurrencePattern) { this.recurrencePattern = recurrencePattern; }
     public void setDependencies(List<Task> dependencies) { this.dependencies = dependencies; }
     public void setProgressPercent(int progressPercent) { this.progressPercent = progressPercent; }
-    public void setCalendarSynced(boolean calendarSynced) { this.calendarSynced = calendarSynced; }
+    public void setCalendarSync(boolean calendarSync) { this.calendarSync = calendarSync; }
     public void setPerformanceSummary(String performanceSummary) { this.performanceSummary = performanceSummary; }
     public void setUserFeedback(String userFeedback) { this.userFeedback = userFeedback; }
 

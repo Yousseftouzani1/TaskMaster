@@ -1,7 +1,15 @@
 package com.example.devmob;
+import android.Manifest;
 
+import android.content.pm.PackageManager;
+
+import androidx.core.content.ContextCompat;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +19,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
@@ -31,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
 
@@ -43,15 +54,60 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
     private MaterialButton btnSave, btnAddTag;
     private ChipGroup chipGroupTags;
 
+
     private final ArrayList<String> tags = new ArrayList<>();
+    private static final int PERMISSION_REQUEST_CODE = 100;
+
+    private boolean checkCalendarPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{
+                    Manifest.permission.WRITE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR
+            }, PERMISSION_REQUEST_CODE);
+            return false;
+        }
+        return true;
+    }
+
+    private long getPrimaryCalendarId() {
+        String[] projection = new String[]{CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME};
+        Cursor cursor = requireActivity().getContentResolver().query(
+                CalendarContract.Calendars.CONTENT_URI,
+                projection,
+                CalendarContract.Calendars.VISIBLE + " = 1 AND " +
+                        CalendarContract.Calendars.IS_PRIMARY + "=1",
+                null,
+                null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            long id = cursor.getLong(0);
+            cursor.close();
+            return id;
+        }
+
+        // fallback: use first visible calendar
+        if (cursor != null && cursor.moveToFirst()) {
+            long id = cursor.getLong(0);
+            cursor.close();
+            return id;
+        }
+
+        return -1;
+    }
+
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        checkCalendarPermission();
 
         View view = inflater.inflate(R.layout.bottom_sheet_task_creation, container, false);
+
 
         // Bind views
         editTitle = view.findViewById(R.id.edit_title);
@@ -59,9 +115,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
         editTimeSpent = view.findViewById(R.id.edit_time_spent);
         editTagInput = view.findViewById(R.id.edit_tag_input);
         editDueDate = view.findViewById(R.id.edit_due_date);
-        editDueDate = view.findViewById(R.id.edit_due_date);
 
-// ⬇️ Add this right here
         editDueDate.setOnClickListener(v -> {
             final Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
@@ -73,8 +127,6 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
                     (view1, selectedYear, selectedMonth, selectedDay) -> {
                         selectedDate = Calendar.getInstance();
                         selectedDate.set(selectedYear, selectedMonth, selectedDay);
-
-                        // Format the date
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                         formattedDate = sdf.format(selectedDate.getTime());
                         editDueDate.setText(formattedDate);
@@ -82,7 +134,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
                     year, month, day
             );
 
-            datePickerDialog.show(); // ✅ important!
+            datePickerDialog.show();
         });
 
         seekProgress = view.findViewById(R.id.seek_progress);
@@ -95,27 +147,25 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
         MaterialAutoCompleteTextView spinnerRecurrence = view.findViewById(R.id.spinner_recurrence);
         MaterialAutoCompleteTextView spinnerPriority = view.findViewById(R.id.spinner_priority);
 
-// Recurrence options
-        String[] recurrenceOptions = new String[] {
+        // Recurrence options
+        String[] recurrenceOptions = new String[]{
                 "Aucune", "Quotidienne", "Hebdomadaire", "Mensuelle", "Annuelle"
         };
         ArrayAdapter<String> recurrenceAdapter = new ArrayAdapter<>(
                 requireContext(), android.R.layout.simple_dropdown_item_1line, recurrenceOptions);
         spinnerRecurrence.setAdapter(recurrenceAdapter);
 
-// Priority options
-        String[] priorityOptions = new String[] {
+        // Priority options
+        String[] priorityOptions = new String[]{
                 "Basse", "Moyenne", "Haute", "Critique"
         };
         ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
                 requireContext(), android.R.layout.simple_dropdown_item_1line, priorityOptions);
         spinnerPriority.setAdapter(priorityAdapter);
 
-// Optional: show dropdown on click
         spinnerRecurrence.setOnClickListener(v -> spinnerRecurrence.showDropDown());
         spinnerPriority.setOnClickListener(v -> spinnerPriority.showDropDown());
 
-        // Handle tag addition
         btnAddTag.setOnClickListener(v -> {
             String tagText = editTagInput.getText().toString().trim();
             if (!tagText.isEmpty()) {
@@ -132,7 +182,6 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             }
         });
 
-        // Handle save button
         btnSave.setOnClickListener(v -> {
             String title = editTitle.getText().toString().trim();
             String description = editDescription.getText().toString().trim();
@@ -173,6 +222,11 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             tasksRef.child(taskId).setValue(taskData)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(getContext(), "Tâche créée !", Toast.LENGTH_SHORT).show();
+
+                        if (calendar && selectedDate != null) {
+                            addTaskToGoogleCalendar(title, description, selectedDate.getTimeInMillis());
+                        }
+
                         dismiss();
                     })
                     .addOnFailureListener(e ->
@@ -182,6 +236,7 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
 
         return view;
     }
+
     private int getIntFromEditText(TextInputEditText editText) {
         try {
             return Integer.parseInt(editText.getText().toString().trim());
@@ -189,4 +244,49 @@ public class TaskCreationBottomSheet extends BottomSheetDialogFragment {
             return 0;
         }
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Calendar permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Calendar permission denied. Cannot sync tasks to calendar.", Toast.LENGTH_LONG).show();
+                // You might want to disable calendar sync switch or inform user
+                if (switchCalendar != null) {
+                    switchCalendar.setChecked(false);
+                    switchCalendar.setEnabled(false);
+                }
+            }
+        }
+    }
+
+
+    private void addTaskToGoogleCalendar(String title, String description, long dueTimeMillis) {
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.DTSTART, dueTimeMillis);
+        values.put(CalendarContract.Events.DTEND, dueTimeMillis + 60 * 60 * 1000); // 1-hour duration
+        values.put(CalendarContract.Events.TITLE, title);
+        values.put(CalendarContract.Events.DESCRIPTION, description);
+        values.put(CalendarContract.Events.CALENDAR_ID, 1); // default calendar
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+        long calendarId = getPrimaryCalendarId();
+        if (calendarId == -1) {
+            Toast.makeText(getContext(), "Aucun calendrier trouvé", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        values.put(CalendarContract.Events.CALENDAR_ID, calendarId);
+
+
+        Uri uri = requireActivity().getContentResolver().insert(CalendarContract.Events.CONTENT_URI, values);
+        if (uri != null) {
+            Toast.makeText(getContext(), "Tâche synchronisée avec Google Calendar", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Échec de la synchronisation avec Calendar", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
