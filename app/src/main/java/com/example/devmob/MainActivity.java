@@ -59,10 +59,15 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(MainActivity.this, "Connexion réussie !", Toast.LENGTH_SHORT).show();
-                        // Go to next activity, like TaskListActivity
-                        startActivity(new Intent(MainActivity.this, TaskListActivity.class));
-                        finish();
+                        if (user != null) {
+                            String uid = user.getUid();
+                            // save it in SharedPreferences, or use it immediately
+                            Intent intent = new Intent(MainActivity.this, TaskListActivity.class);
+                            intent.putExtra("USER_UID", uid);
+                            startActivity(intent);
+                            finish();
+                        }
+
                     } else {
                         Log.e("FIREBASE_LOGIN", "Erreur : ", task.getException());
                         Toast.makeText(MainActivity.this, "Échec de la connexion", Toast.LENGTH_SHORT).show();

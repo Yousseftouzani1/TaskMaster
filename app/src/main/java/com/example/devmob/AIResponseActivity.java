@@ -39,9 +39,8 @@ public class AIResponseActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String result) {
                 Log.d("TASK_JSON_STRING", result);
-
-                String prompt = "Here are my tasks:\n" +
-                        result + "\nWhat should I do first and why? Give me a plan using PERT logic in a few clear lines.";
+                String prompt = "vopici mes taches\n" +
+                        result + "\n donne moi un plan pour toutes mes taches en suivant la priorite et la freqence et la logique pert et donne moi un paragraphe de 12 lignes max don t use ** and pas d ecriture en gras ecrit le titre des taches en majijuscule   ";
 
                 try {
                     AIRequest.getSmartSuggestion(prompt, new AIRequest.SuggestionCallback() {

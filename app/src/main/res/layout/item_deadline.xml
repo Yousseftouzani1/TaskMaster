@@ -5,15 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="9dp"
     android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <!-- Task Title -->
         <TextView
@@ -21,17 +21,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Finish UI Revamp"
-            android:textColor="#212121"
+            android:textColor="#1B5E20"
             android:textSize="18sp"
             android:textStyle="bold"
             android:maxLines="2"
-            android:ellipsize="end" />
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium" />
 
         <!-- Date and Status Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -39,8 +40,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@android:drawable/ic_menu_my_calendar"
-                android:layout_marginEnd="6dp"
-                app:tint="#757575" />
+                android:layout_marginEnd="8dp"
+                app:tint="#388E3C" />
 
             <TextView
                 android:id="@+id/deadlineDate"
@@ -48,27 +49,28 @@
                 android:layout_height="wrap_content"
                 android:text="Due: 2025-05-08"
                 android:textSize="14sp"
-                android:textColor="#757575" />
+                android:textColor="#388E3C" />
 
             <TextView
                 android:id="@+id/deadlineStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:text="Upcoming"
-                android:textColor="#979595"
-                android:textSize="12sp" />
+                android:textColor="#2E7D32"
+                android:textSize="12sp"
+                android:background="@drawable/status_background" />
         </LinearLayout>
 
         <!-- Progress and Value -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -80,22 +82,22 @@
                 style="@android:style/Widget.ProgressBar.Horizontal"
                 android:max="100"
                 android:progress="70"
-                android:progressTint="#3F51B5"
+                android:progressTint="#2E7D32"
                 android:indeterminate="false" />
 
             <TextView
                 android:id="@+id/progressValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:text="70%"
                 android:textSize="14sp"
-                android:textColor="#3F51B5"
+                android:textColor="#2E7D32"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Update Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/updateProgressButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,6 +105,8 @@
             android:text="Update Progress"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"
-            android:backgroundTint="#575FD3" />
+            android:padding="12dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#2E7D32" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

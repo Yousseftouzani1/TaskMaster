@@ -2,7 +2,11 @@ package com.example.devmob;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,160 +22,186 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.devmob.deadlineManager.DeadlineActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskListActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private TaskAdapter adapter;
-    private List<Task> taskList;
-    private FloatingActionButton fabAdd;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
+
+    private RecyclerView recyclerView;
+    private TaskAdapter adapter;
+    private List<Task> taskList     = new ArrayList<>();
+    private List<Task> filteredList = new ArrayList<>();
+
+    private FloatingActionButton fabAdd;
+    private TextInputEditText searchEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
-        // Initialisation
-        toolbar = findViewById(R.id.toolbar);
-        drawerLayout = findViewById(R.id.drawer_layout);
+        // --- find views ---
+        toolbar        = findViewById(R.id.toolbar);
+        drawerLayout   = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
-        recyclerView = findViewById(R.id.recyclerView);
-        fabAdd = findViewById(R.id.fab_add_task);
+        recyclerView   = findViewById(R.id.recyclerView);
+        fabAdd         = findViewById(R.id.fab_add_task);
+        searchEditText = findViewById(R.id.search_edit_text);
 
-        // Toolbar setup
+        // --- setup toolbar & drawer ---
         setSupportActionBar(toolbar);
-
-        // Drawer toggle (hamburger icon)
         toggle = new ActionBarDrawerToggle(
-                this,
-                drawerLayout,
-                toolbar,
+                this, drawerLayout, toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         );
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Menu item click handling (if needed)
+        // --- populate navigation header ---
+        View headerView = navigationView.getHeaderView(0);
+        TextView headerName  = headerView.findViewById(R.id.nav_header_username);
+        TextView headerEmail = headerView.findViewById(R.id.nav_header_email);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String name  = user.getDisplayName();
+            String email = user.getEmail();
+            headerName .setText((name  != null && !name.isEmpty())  ? name  : "Task Master");
+            headerEmail.setText((email != null && !email.isEmpty()) ? email : "");
+        }
+
+        // --- handle navigation item clicks ---
         navigationView.setNavigationItemSelectedListener(menuItem -> {
             int id = menuItem.getItemId();
-
             if (id == R.id.nav_home) {
                 Toast.makeText(this, "Accueil", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.nav_calendar) {
-                Toast.makeText(this, "Calendrier", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, CalendarActivity.class));
             } else if (id == R.id.nav_priority) {
-                Toast.makeText(this, "Priorités", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(TaskListActivity.this, AIResponseActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(this, AIResponseActivity.class));
             } else if (id == R.id.nav_stats) {
-                Toast.makeText(this, "Statistiques", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(TaskListActivity.this, StatsActivity.class);
-                startActivity(intent);
-            }else if (id == R.id.nav_deadline) {
-                Toast.makeText(this, "Deadlines", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(TaskListActivity.this, DeadlineActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(this, StatsActivity.class));
+            } else if (id == R.id.nav_deadline) {
+                startActivity(new Intent(this, DeadlineActivity.class));
             }
-
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
+        // --- set up RecyclerView & adapter ---
+        adapter = new TaskAdapter(task -> {
+            Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
+            intent.putExtra("title",            task.getTitle());
+            intent.putExtra("description",      task.getDescription());
+            intent.putExtra("task_status",      task.getStatus());
+            intent.putExtra("task_priority",    task.getPriorityLevel());
+            intent.putExtra("dueDate",          task.getDueDate());
+            intent.putExtra("progressPercent",  task.getProgressPercent());
+            intent.putExtra("finished",         task.getfinished());
+            intent.putExtra("taskId",           task.getId());
+            if (task.getTags() != null) {
+                intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
+            } else {
+                intent.putStringArrayListExtra("tags", new ArrayList<>());
+            }
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        }, filteredList);
 
-// read from realtime database instance in firebase
-        taskList = new ArrayList<>();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
-// Query only tasks where isfinished == false
+        // --- search filtering ---
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                filterTasks(s.toString());
+            }
+        });
+
+        // --- load only unfinished tasks from Firebase ---
         Query tasksQuery = FirebaseDatabase.getInstance()
                 .getReference("tasks")
                 .orderByChild("isfinished")
                 .equalTo(false);
 
         tasksQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
                 taskList.clear();
-                for (DataSnapshot taskSnapshot : snapshot.getChildren()) {
-                    Task task = taskSnapshot.getValue(Task.class);
-                    if (task != null) {
-                        // Set Firebase key as the task ID
-                        task.setId(taskSnapshot.getKey());
-                        taskList.add(task); // No need to check getfinished() again
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Task t = ds.getValue(Task.class);
+                    if (t != null) {
+                        t.setId(ds.getKey());
+                        taskList.add(t);
                     }
                 }
+                filteredList.clear();
+                filteredList.addAll(taskList);
                 adapter.notifyDataSetChanged();
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(TaskListActivity.this, " Erreur de lecture : " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(TaskListActivity.this,
+                        "Erreur de lecture : " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Adapter
-        adapter = new TaskAdapter(task -> {
-            Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
-
-            intent.putExtra("title", task.getTitle());
-            intent.putExtra("description", task.getDescription());
-            intent.putExtra("task_status", task.getStatus());
-            intent.putExtra("task_priority", task.getPriorityLevel());
-            intent.putExtra("dueDate", task.getDueDate());
-            intent.putExtra("progressPercent", task.getProgressPercent());
-            intent.putExtra("finished", task.getfinished());
-            if (task.getTags() != null) {
-                intent.putStringArrayListExtra("tags", new ArrayList<>(task.getTags()));
-            } else {
-                intent.putStringArrayListExtra("tags", new ArrayList<>()); // send empty list to prevent crash
-            }
-            intent.putExtra("taskId", task.getId()); // ← YOU NEED THIS!
-            startActivity(intent);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        }, taskList);
-
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-        // Drag-and-drop
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
-                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView rv,
-                                  @NonNull RecyclerView.ViewHolder from,
-                                  @NonNull RecyclerView.ViewHolder to) {
-                adapter.swapItems(from.getAdapterPosition(), to.getAdapterPosition());
+        // --- enable drag & drop ---
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP|ItemTouchHelper.DOWN, 0) {
+            @Override public boolean onMove(@NonNull RecyclerView rv,
+                                            @NonNull RecyclerView.ViewHolder src,
+                                            @NonNull RecyclerView.ViewHolder dst) {
+                adapter.swapItems(src.getAdapterPosition(), dst.getAdapterPosition());
                 return true;
             }
+            @Override public void onSwiped(@NonNull RecyclerView.ViewHolder vh, int dir) {}
+        }).attachToRecyclerView(recyclerView);
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
-        });
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        // FAB click oppens the buttom sheet
+        // --- FAB to create new task ---
         fabAdd.setOnClickListener(v -> {
-            TaskCreationBottomSheet bottomSheet = new TaskCreationBottomSheet();
-            bottomSheet.show(getSupportFragmentManager(), "TaskCreationBottomSheet");
+            new TaskCreationBottomSheet()
+                    .show(getSupportFragmentManager(), "TaskCreationBottomSheet");
         });
-
     }
 
-    // Gérer le bouton retour quand le drawer est ouvert
+    /** Filters displayed tasks by title or description in real time. */
+    private void filterTasks(String query) {
+        String lower = query.toLowerCase(Locale.getDefault());
+        filteredList.clear();
+        if (lower.isEmpty()) {
+            filteredList.addAll(taskList);
+        } else {
+            for (Task t : taskList) {
+                boolean inTitle = t.getTitle() != null &&
+                        t.getTitle().toLowerCase(Locale.getDefault()).contains(lower);
+                boolean inDesc  = t.getDescription() != null &&
+                        t.getDescription().toLowerCase(Locale.getDefault()).contains(lower);
+                if (inTitle || inDesc) {
+                    filteredList.add(t);
+                }
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -181,12 +211,9 @@ public class TaskListActivity extends AppCompatActivity {
         }
     }
 
-    // Synchroniser le toggle avec l'état du menu
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+        if (toggle.onOptionsItemSelected(item)) return true;
         return super.onOptionsItemSelected(item);
     }
 }

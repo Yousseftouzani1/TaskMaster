@@ -1,0 +1,73 @@
+BESOINS FONCTIONNELS
+
+1. Gestion des Utilisateurs
+   - Inscription des nouveaux utilisateurs
+   - Authentification des utilisateurs
+   - Gestion des profils utilisateurs
+
+2. Gestion des Tâches
+   - Création de nouvelles tâches
+   - Visualisation de la liste des tâches
+   - Consultation des détails d'une tâche
+   - Modification des tâches existantes
+   - Suppression de tâches
+   - Organisation des tâches par catégories
+
+3. Fonctionnalités d'IA
+   - Assistance intelligente pour la gestion des tâches
+   - Suggestions personnalisées
+   - Analyse des tâches
+
+4. Statistiques et Rapports
+   - Visualisation des statistiques de tâches
+   - Suivi de la progression
+   - Analyse des performances
+
+5. Interface Utilisateur
+   - Navigation intuitive entre les écrans
+   - Affichage des tâches sous forme de liste
+   - Modal de création de tâches (Bottom Sheet)
+   - Interface de détail des tâches
+
+BESOINS NON FONCTIONNELS
+
+1. Performance
+   - Temps de réponse rapide pour le chargement des tâches
+   - Réactivité de l'interface utilisateur
+   - Optimisation des requêtes Firebase
+
+2. Sécurité
+   - Authentification sécurisée
+   - Protection des données utilisateur
+   - Gestion sécurisée des sessions
+
+3. Fiabilité
+   - Sauvegarde fiable des données
+   - Gestion des erreurs
+   - Récupération après panne
+
+4. Maintenabilité
+   - Code modulaire et bien structuré
+   - Documentation du code
+   - Facilité d'évolution
+
+5. Compatibilité
+   - Support des différentes versions d'Android
+   - Adaptation aux différentes tailles d'écran
+   - Gestion des orientations (portrait/paysage)
+
+6. Disponibilité
+   - Accès aux données hors ligne
+   - Synchronisation automatique
+   - Gestion de la connectivité
+
+7. Évolutivité
+   - Architecture extensible
+   - Support pour de nouvelles fonctionnalités
+   - Capacité à gérer un nombre croissant d'utilisateurs
+
+8. Expérience Utilisateur
+   - Interface intuitive et moderne
+   - Feedback visuel des actions
+   - Accessibilité
+   - Design responsive 

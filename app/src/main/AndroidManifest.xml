@@ -4,6 +4,12 @@
     package="com.example.devmob">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +22,12 @@
         android:theme="@style/Theme.Devmob"
         tools:targetApi="31">
         <activity
+            android:name=".CalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditTaskActivity"
+            android:exported="false" />
+        <activity
             android:name=".deadlineManager.DeadlineActivity"
             android:exported="false" />
         <activity
@@ -26,7 +38,8 @@
             android:exported="false" />
         <activity
             android:name=".TaskListActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/mes_taches"/>
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
@@ -42,8 +55,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
     </application>
 
 </manifest>

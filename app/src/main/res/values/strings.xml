@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Devmob</string>
+    <string name="app_name">Task Master</string>
     <string name="navigation_drawer_open">Ouvrir le menu</string>
     <string name="navigation_drawer_close">Fermer le menu</string>
     <string name="choose_priority">Choisir une priorité</string>
@@ -11,6 +11,7 @@
         <item>Moyenne</item>
         <item>Basse</item>
     </string-array>
+    <string name="mes_taches"></string>
 
     <string-array name="statuses">
         <item>À faire</item>
@@ -26,7 +27,6 @@
     <string name="default_web_client_id">
         467718674232-lqd5vd7b7jeddvmermv0nb6bj098d8k0.apps.googleusercontent.com
     </string>
-
 
 
 </resources>

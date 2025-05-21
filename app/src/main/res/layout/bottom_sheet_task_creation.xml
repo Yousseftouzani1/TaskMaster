@@ -3,149 +3,191 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#F5F9F5"
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:divider="?android:attr/dividerHorizontal"
-        android:showDividers="middle"
-        android:dividerPadding="8dp"
         android:layout_marginBottom="32dp">
 
         <!-- Title -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Titre de la tâche">
+            android:hint="Titre de la tâche"
+            app:boxStrokeColor="#2E7D32"
+            app:hintTextColor="#2E7D32"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="#1B5E20"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Description -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description">
+            android:hint="Description"
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="#BBC7BB"
+            app:hintTextColor="#2E7D32"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minLines="3"
+                android:textColor="#1B5E20"
                 android:inputType="textMultiLine"/>
         </com.google.android.material.textfield.TextInputLayout>
-
-
-
 
         <!-- Recurrence -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Récurrence">
+            android:hint="Récurrence"
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="#2E7D32"
+            app:hintTextColor="#2E7D32"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/spinner_recurrence"
                 android:layout_width="match_parent"
-                android:layout_height="37dp"
-                android:inputType="none" />
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textColor="#1B5E20" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Priority -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Niveau de priorité">
+            android:hint="Niveau de priorité"
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="#2E7D32"
+            app:hintTextColor="#2E7D32"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/spinner_priority"
                 android:layout_width="match_parent"
-                android:layout_height="34dp"
-                android:inputType="none" />
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textColor="#1B5E20" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Date Picker -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="#2E7D32"
+            app:hintTextColor="#2E7D32"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_due_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:clickable="true"
+                android:focusable="false"
+                android:hint="Sélectionner une date"
                 android:inputType="none"
-                android:hint="Sélectionner une date"/>
+                android:textColor="#28CE36" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <!-- Reminder -->
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/switch_reminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Activé Rappel ?" />
+            android:layout_marginTop="16dp"
+            android:text="Activé Rappel ?"
+            android:textColor="#6F9B73"
+            app:thumbTint="#CEC6C6"
+            app:trackTint="#388E3C" />
 
         <!-- Time Spent -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Temps à passé (en minutes)">
+            android:hint="Temps à passé (en minutes)"
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="#2E7D32"
+            app:hintTextColor="#2E7D32"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_time_spent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#1B5E20"
                 android:inputType="number" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:chipSpacing="8dp"
+                app:singleLine="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Tags Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tags" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_tags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:singleLine="false"
-            app:chipSpacing="4dp" />
+            android:text="Tags"
+            android:textColor="#1B5E20"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
+            android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Ajouter un tag">
+                android:hint="Ajouter un tag"
+                app:boxStrokeColor="#2E7D32"
+                app:hintTextColor="#2E7D32"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_tag_input"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="#1B5E20" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_tag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+" />
+                android:text="+"
+                android:layout_marginStart="7dp"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#2E7D32" />
         </LinearLayout>
-
 
         <!-- Progress -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Progression (%)" />
+            android:text="Progression (%)"
+            android:textColor="#1B5E20"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
 
         <com.google.android.material.slider.Slider
             android:id="@+id/seek_progress"
@@ -154,6 +196,11 @@
             android:valueFrom="0"
             android:valueTo="100"
             android:stepSize="1"
+            android:layout_marginTop="8dp"
+            app:labelBehavior="floating"
+            app:thumbColor="#2E7D32"
+            app:trackColorActive="#2B832B"
+            app:trackColorInactive="#4B8E38"
             android:contentDescription="Progression de la tâche en pourcentage"/>
 
         <!-- Calendar Sync -->
@@ -161,8 +208,11 @@
             android:id="@+id/switch_calendar_sync"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Synchroniser avec le calendrier ?" />
-
+            android:text="Synchroniser avec le calendrier ?"
+            android:textColor="#1B5E20"
+            android:layout_marginTop="16dp"
+            app:thumbTint="#2E7D32"
+            app:trackTint="#388E3C" />
 
         <!-- Save Button -->
         <com.google.android.material.button.MaterialButton
@@ -171,6 +221,8 @@
             android:layout_height="wrap_content"
             android:text="Créer la tâche"
             android:layout_marginTop="24dp"
-            />
+            android:padding="12dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#2E7D32" />
     </LinearLayout>
 </ScrollView>

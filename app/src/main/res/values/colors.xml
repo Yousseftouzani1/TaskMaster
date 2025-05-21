@@ -9,5 +9,7 @@
     <color name="lightGray">#E0E0E0</color>
     <color name="fond">#A3BFC3D0</color>
     <color name="fond2">#A3595D85</color>
+    <color name="teal_200">#FF03DAC5</color>
+
     <color name="fond_background">#EE575B8C</color>
 </resources>

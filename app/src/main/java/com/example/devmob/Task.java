@@ -10,7 +10,14 @@ public class Task {
     private long dueDate;
     private String priorityLevel;
     private String status;
-
+    // === CHAMPS NOTIFICATIONS ===
+    private int notificationsPerDay;    // ex. 3 → 3 rappels par jour
+    private boolean notificationsEnabled;      // notifications globales on/off
+    private long reminderOffsetMillis;         // combien de ms avant la dueDate déclencher la notif
+    private int snoozeMinutes;                 // durée de snooze par défaut
+    private long lastNotifiedTimestamp;        // pour éviter les doublons
+    private String notificationChannelId;      // pour Android O+
+    // === CHAMPS NOTIFICATIONS ===
     // Additional Details
     private List<String> attachments;
     private List<String> comments;
@@ -18,6 +25,7 @@ public class Task {
     private boolean reminderEnabled;
     private boolean isfinished;
     private List<String> tags;
+    private String userId;       // ← new field
 
     // Timestamps
     private long createdDate;
@@ -40,7 +48,7 @@ public class Task {
         // Required empty constructor for Firebase deserialization
     }
 
-    public Task(String id, String title, String description, long dueDate,
+    public Task(String id, String title, String userId, String description, long dueDate,
                 String priorityLevel, String status, List<String> attachments,
                 List<String> comments, long timeSpent, boolean reminderEnabled,
                 List<String> tags, long createdDate, long lastUpdatedDate,
@@ -49,6 +57,8 @@ public class Task {
                 String performanceSummary, String userFeedback, long finishedDate) {
         this.id = id;
         this.title = title;
+        this.userId = userId;
+
         this.description = description;
         this.dueDate = dueDate;
         this.priorityLevel = priorityLevel;
@@ -81,7 +91,8 @@ public class Task {
     public boolean getfinished() {
         return this.isfinished;
     }
-
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
     public void markfinished() {
         this.isfinished = true;
     }
@@ -133,4 +144,44 @@ public class Task {
     public void setCalendarSynced(boolean calendarSync) { this.calendarSync = calendarSync; }
     public void setPerformanceSummary(String performanceSummary) { this.performanceSummary = performanceSummary; }
     public void setUserFeedback(String userFeedback) { this.userFeedback = userFeedback; }
+    /////////////////////////////////////////////////////          notification
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+    public void setNotificationsEnabled(boolean enabled) {
+        this.notificationsEnabled = enabled;
+    }
+    public long getReminderOffsetMillis() {
+        return reminderOffsetMillis;
+    }
+    public void setReminderOffsetMillis(long offsetMillis) {
+        this.reminderOffsetMillis = offsetMillis;
+    }
+
+    public int getSnoozeMinutes() {
+        return snoozeMinutes;
+    }
+    public void setSnoozeMinutes(int minutes) {
+        this.snoozeMinutes = minutes;
+    }
+
+    public long getLastNotifiedTimestamp() {
+        return lastNotifiedTimestamp;
+    }
+    public void setLastNotifiedTimestamp(long timestamp) {
+        this.lastNotifiedTimestamp = timestamp;
+    }
+
+    public String getNotificationChannelId() {
+        return notificationChannelId;
+    }
+    public void setNotificationChannelId(String channelId) {
+        this.notificationChannelId = channelId;
+    }
+    public int getNotificationsPerDay() {
+        return notificationsPerDay;
+    }
+    public void setNotificationsPerDay(int notificationsPerDay) {
+        this.notificationsPerDay = notificationsPerDay;
+    }
 }

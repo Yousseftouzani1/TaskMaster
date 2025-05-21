@@ -97,7 +97,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                 Map<String, Object> updates = new HashMap<>();
                 updates.put("finishedDate", finishedAt);
                 updates.put("isfinished", true);
-
+                updates.put("progressPercent", 100);
                 taskRef.updateChildren(updates)
                         .addOnSuccessListener(aVoid -> {
                             finishedbutton.setText("Task marked as done");
@@ -110,7 +110,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                             Log.e("FirebaseUpdate", "Error: " + e.getMessage());
                         });
             } else {
-                finishedbutton.setText("Marked as finished (Invalid ID)");
+                finishedbutton.setText("Marked as finished error (Invalid ID)");
                 Log.e("TaskUpdate", "Invalid task ID: " + taskId);
             }
         });

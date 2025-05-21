@@ -5,16 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fond"
-    android:padding="4dp">
+    android:padding="16dp">
 
     <LinearLayout
-        android:outlineSpotShadowColor="@color/fond"
-        android:padding="40dp"
-        android:layout_marginTop="70dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:layout_margin="8dp"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/rounded_bg"
+        android:elevation="8dp"
+        android:translationZ="8dp"
+        android:clipToPadding="false"
+        android:outlineSpotShadowColor="#33000000"
+        android:outlineAmbientShadowColor="#33000000">
 
         <!-- Header -->
         <TextView
@@ -22,77 +27,108 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Task Title"
-            android:textSize="22sp"
-            android:textColor="#212121"
+            android:textSize="24sp"
+            android:textColor="#1B5E20"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="16dp" />
 
         <!-- Status and Priority -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/taskStatus"
-                android:layout_width="257dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:hint="in progress"
                 android:text="Status: In Progress"
-                android:textColor="#388E3C"
-                android:textSize="14sp" />
+                android:textColor="#2E7D32"
+                android:textSize="14sp"
+                android:background="@drawable/status_background"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
 
             <TextView
                 android:id="@+id/taskPriority"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:text="High Priority"
-                android:textColor="#D32F2F"
+                android:textColor="#2E7D32"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:drawablePadding="4dp"
+                android:drawableStart="@android:drawable/ic_menu_sort_by_size" />
 
         </LinearLayout>
 
         <!-- Due Date -->
-        <TextView
-            android:id="@+id/taskDueDate"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Due: 2025-04-22"
-            android:textSize="14sp"
-            android:textColor="#757575"
-            android:layout_marginBottom="16dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                android:layout_marginEnd="8dp"
+                app:tint="#388E3C" />
+
+            <TextView
+                android:id="@+id/taskDueDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Due: 2025-04-22"
+                android:textSize="14sp"
+                android:textColor="#388E3C" />
+        </LinearLayout>
 
         <!-- Description -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="24dp">
 
             <TextView
                 android:id="@+id/taskDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:padding="20dp"
                 android:text="This task involves creating modern UI..."
-                android:textColor="#424242"
-                android:textSize="14sp" />
+                android:textColor="#1B5E20"
+                android:textSize="15sp"
+                android:lineSpacingExtra="4dp" />
         </androidx.cardview.widget.CardView>
 
         <!-- Tags -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tags"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#1B5E20"
+            android:layout_marginBottom="8dp" />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/taskTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="24dp"
             app:singleLine="false"
-            app:chipSpacing="8dp">
-            <!-- Dynamically added chips -->
-        </com.google.android.material.chip.ChipGroup>
+            app:chipSpacing="8dp" />
 
         <!-- Progress -->
         <TextView
@@ -101,28 +137,40 @@
             android:text="Progress"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:textColor="#1B5E20"
+            android:layout_marginBottom="12dp" />
 
         <ProgressBar
             android:id="@+id/taskProgressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:progress="70"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progressTint="#2196F3"
-            android:layout_marginBottom="16dp" />
-
-
-        <!-- Meeting or Reminder Button -->
-        <Button
-            android:id="@+id/finished"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="32dp"
-            android:backgroundTint="#3F51B5"
-            android:text="Finished"
+            android:progress="70"
+            android:progressTint="#2E7D32" />
+
+        <!-- Finished Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/finished"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:paddingVertical="14dp"
+            android:text="Mark as Finished"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF" />
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:backgroundTint="#388E3C"
+            app:rippleColor="#2E7D32"
+            android:elevation="4dp"
+            app:icon="@drawable/baseline_check_24"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp"
+            app:iconTint="@android:color/white" />
+
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

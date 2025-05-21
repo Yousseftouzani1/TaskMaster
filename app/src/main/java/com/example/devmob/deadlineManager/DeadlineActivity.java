@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.devmob.R;
 import com.example.devmob.Task;
 import com.example.devmob.TaskDetailActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +30,7 @@ public class DeadlineActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TaskDeadlineAdapter adapter;
     private List<Task> deadlineList;
+    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,8 @@ public class DeadlineActivity extends AppCompatActivity {
 
         adapter = new TaskDeadlineAdapter(task -> {
             Intent intent = new Intent(DeadlineActivity.this, TaskDetailActivity.class);
+            intent.putExtra("taskId", task.getId());
+            intent.putExtra("title", task.getTitle());
             intent.putExtra("title", task.getTitle());
             intent.putExtra("description", task.getDescription());
             intent.putExtra("task_status", task.getStatus());

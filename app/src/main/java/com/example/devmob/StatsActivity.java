@@ -2,6 +2,8 @@ package com.example.devmob;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,192 +26,169 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-// ... (imports remain unchanged)
+import java.util.Locale;
 
 public class StatsActivity extends AppCompatActivity {
-
     private static final String TAG = "StatsActivity";
 
-    private TextView completedTextView, rateTextView;
-    private FirebaseFirestore db;
     private PieChart pieChart;
     private BarChart barChart;
+    private TableLayout tableSummary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
 
-        pieChart = findViewById(R.id.pieChart);
-        barChart = findViewById(R.id.barChart);
-        db = FirebaseFirestore.getInstance();
+        pieChart     = findViewById(R.id.pieChart);
+        barChart     = findViewById(R.id.barChart);
+        tableSummary = findViewById(R.id.tableSummary);
 
-        Log.d(TAG, "onCreate: Initialized UI components and Firestore");
-
-        fetchAndShowStats();
+        loadStats();
     }
 
-    private void fetchBarStats(DataSnapshot snapshot) {
-        int completedBeforeDue = 0;
-        int completedAfterDue = 0;
-        int notCompleted = 0;
+    private void loadStats() {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("tasks");
 
-        Log.d(TAG, "fetchBarStats: Starting to process snapshot with " + snapshot.getChildrenCount() + " children");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snap) {
+                int total   = 0;
+                int onTime  = 0;
+                int late    = 0;
+                int notDone = 0;
+                long now = System.currentTimeMillis();
 
-        for (DataSnapshot doc : snapshot.getChildren()) {
-            Task task = doc.getValue(Task.class);
-            if (task != null) {
-                int progress = task.getProgressPercent();
-                Log.d(TAG, "Task ID: " + doc.getKey() + " Progress: " + progress);
+                for (DataSnapshot ds : snap.getChildren()) {
+                    Task t = ds.getValue(Task.class);
+                    if (t == null) continue;
+                    total++;
 
-                if (progress == 100) { // Task is completed
-                    try {
-                        Date dueDate = new Date(task.getDueDate());
-                        Date finishedDate = new Date(task.getFinishedDate());
+                    // Determine if marked finished
+                    boolean finishedFlag = t.getfinished()
+                            || t.getProgressPercent() >= 100;
 
-                        Log.d(TAG, "Finished date: " + finishedDate + " | Due date: " + dueDate);
-
-                        if (!finishedDate.after(dueDate)) { // Finished before or on the due date
-                            completedBeforeDue++;
-                        } else { // Finished after the due date
-                            completedAfterDue++;
+                    if (finishedFlag) {
+                        // Use finishedDate, or fallback to lastUpdatedDate, then now
+                        long finishTs = t.getFinishedDate();
+                        if (finishTs <= 0) {
+                            long upd = t.getLastUpdatedDate();
+                            finishTs = upd > 0 ? upd : now;
                         }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Date parsing error for task: " + doc.getKey(), e);
-                        completedAfterDue++; // Handle the error case by considering it as completed late
-                    }
-                } else { // Task is not completed yet
-                    notCompleted++;
-                }
-            } else {
-                Log.w(TAG, "Task is null for key: " + doc.getKey());
-            }
-            Log.d(TAG, "completedBeforeDue=" + completedBeforeDue +
-                    ", completedAfterDue=" + completedAfterDue +
-                    ", notCompleted=" + notCompleted);
-        }
+                        long dueTs = t.getDueDate();
 
-        Log.d(TAG, "Summary -> CompletedBeforeDue: " + completedBeforeDue +
-                ", CompletedAfterDue: " + completedAfterDue + ", NotCompleted: " + notCompleted);
-
-        showBarChart(completedBeforeDue, completedAfterDue, notCompleted);
-    }
-
-
-    private void fetchAndShowStats() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("tasks");
-        Log.d(TAG, "fetchAndShowStats: Fetching tasks from Firebase Realtime Database");
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int completed = 0;
-                int inProgress = 0;
-                int total = (int) snapshot.getChildrenCount();
-
-                Log.d(TAG, "onDataChange: Total tasks: " + total);
-
-                for (DataSnapshot doc : snapshot.getChildren()) {
-                    Task task = doc.getValue(Task.class);
-                    if (task != null) {
-                        int progress = task.getProgressPercent();
-                        Log.d(TAG, "Processing Task ID: " + doc.getKey() + " Progress: " + progress);
-
-                        if (progress != -1) {
-                            if (progress == 100) {
-                                completed++;
-                            } else {
-                                inProgress++;
-                            }
+                        // If dueTs >0 and finishTs after dueTs => late, else on-time
+                        if (dueTs > 0 && finishTs > dueTs) {
+                            late++;
+                        } else {
+                            onTime++;
                         }
                     } else {
-                        Log.w(TAG, "Null task for key: " + doc.getKey());
+                        notDone++;
                     }
                 }
 
-                Log.d(TAG, "Completed: " + completed + ", In Progress: " + inProgress);
-                showPieChart(completed, inProgress);
+                Log.d(TAG, String.format(Locale.US,
+                        "Stats: total=%d onTime=%d late=%d notDone=%d",
+                        total, onTime, late, notDone));
 
-                // Call bar stats processing
-                fetchBarStats(snapshot);
+                showPieChart(onTime + late, notDone);
+                showBarChart(onTime, late, notDone);
+                fillSummaryTable(onTime, late, notDone, total);
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Database error: ", error.toException());
+            @Override public void onCancelled(@NonNull DatabaseError e) {
+                Log.e(TAG, "loadStats:onCancelled", e.toException());
             }
         });
     }
 
-    private void showPieChart(int completed, int incomplete) {
+    private void showPieChart(int done, int notDone) {
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(completed, "Completed"));
-        entries.add(new PieEntry(incomplete, "Incomplete"));
+        entries.add(new PieEntry(done,    "Terminées"));
+        entries.add(new PieEntry(notDone, "Non terminées"));
 
-        Log.d(TAG, "PieChart: Entries -> Completed: " + completed + ", Incomplete: " + incomplete);
+        PieDataSet ds = new PieDataSet(entries, "");
+        ds.setColors(
+                ContextCompat.getColor(this, android.R.color.holo_green_light),
+                ContextCompat.getColor(this, android.R.color.darker_gray)
+        );
 
-        PieDataSet dataSet = new PieDataSet(entries, " ");
-        dataSet.setColors(new int[]{
-                getResources().getColor(android.R.color.holo_blue_dark, getTheme()),
-                getResources().getColor(android.R.color.darker_gray, getTheme())
-        });
-
-        PieData data = new PieData(dataSet);
-        pieChart.setData(data);
-
+        pieChart.setData(new PieData(ds));
         Description desc = new Description();
-        desc.setText("Tasks completion rate");
+        desc.setText("Achèvement global");
         pieChart.setDescription(desc);
-
         pieChart.invalidate();
-        Log.d(TAG, "PieChart rendered successfully");
     }
 
-    private void showBarChart(int completedBeforeDue, int completedAfterDue, int notCompleted) {
-        List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, completedBeforeDue));
-        entries.add(new BarEntry(1f, completedAfterDue));
-        entries.add(new BarEntry(2f, notCompleted));
+    private void showBarChart(int onTime, int late, int notDone) {
+        List<BarEntry> ents = new ArrayList<>();
+        ents.add(new BarEntry(0f, onTime));
+        ents.add(new BarEntry(1f, late));
+        ents.add(new BarEntry(2f, notDone));
 
-        Log.d(TAG, "BarChart: Entries -> BeforeDue: " + completedBeforeDue +
-                ", AfterDue: " + completedAfterDue + ", NotCompleted: " + notCompleted);
-
-        BarDataSet dataSet = new BarDataSet(entries, "Tasks by Completion Timing");
-        dataSet.setColors(
+        BarDataSet ds = new BarDataSet(ents, "");
+        ds.setColors(
                 ContextCompat.getColor(this, android.R.color.holo_green_dark),
                 ContextCompat.getColor(this, android.R.color.holo_orange_light),
                 ContextCompat.getColor(this, android.R.color.holo_red_dark)
         );
 
-        BarData data = new BarData(dataSet);
-        data.setBarWidth(0.4f);
+        BarData data = new BarData(ds);
+        data.setBarWidth(0.5f);
         barChart.setData(data);
         barChart.setFitBars(true);
 
-        XAxis xAxis = barChart.getXAxis();
-        xAxis.setGranularity(1f);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAxisMinimum(-0.5f);
-        xAxis.setAxisMaximum(2.5f);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(new String[]{
-                "Completed on time", "Late completion", "Not completed"
+        XAxis x = barChart.getXAxis();
+        x.setPosition(XAxis.XAxisPosition.BOTTOM);
+        x.setGranularity(1f);
+        x.setValueFormatter(new IndexAxisValueFormatter(new String[]{
+                "À l’heure", "En retard", "Non réalisées"
         }));
 
-        barChart.getAxisLeft().setAxisMinimum(0f);
         barChart.getAxisRight().setEnabled(false);
-        barChart.getDescription().setText("Task Completion Breakdown");
-
+        barChart.getDescription().setText("Répartition des tâches");
         barChart.invalidate();
-        Log.d(TAG, "BarChart rendered successfully");
+    }
+
+    private void fillSummaryTable(int onTime, int late, int notDone, int total) {
+        int count = tableSummary.getChildCount();
+        if (count > 1) tableSummary.removeViews(1, count - 1);
+
+        addRow("Terminées à l’heure", onTime, total);
+        addRow("Terminées en retard", late,    total);
+        addRow("Non terminées",       notDone, total);
+        addRow("Taux de réussite",    onTime + late, total, true);
+    }
+
+    private void addRow(String label, int count, int total) {
+        addRow(label, count, total, false);
+    }
+
+    private void addRow(String label, int count, int total, boolean highlight) {
+        float pct = total == 0 ? 0f : (count * 100f / total);
+        TableRow row = new TableRow(this);
+
+        TextView tvLabel = new TextView(this);
+        tvLabel.setText(label);
+        if (highlight) {
+            tvLabel.setTextColor(
+                    ContextCompat.getColor(this, android.R.color.holo_blue_dark)
+            );
+        }
+
+        TextView tvCount = new TextView(this);
+        tvCount.setText(String.valueOf(count));
+
+        TextView tvPct = new TextView(this);
+        tvPct.setText(String.format(Locale.getDefault(), "%.1f%%", pct));
+
+        row.addView(tvLabel);
+        row.addView(tvCount);
+        row.addView(tvPct);
+        tableSummary.addView(row);
     }
 }
-
