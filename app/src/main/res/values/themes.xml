@@ -6,4 +6,9 @@
     </style>
 
     <style name="Theme.Devmob" parent="Base.Theme.Devmob" />
+
+    <style name="Theme.Devmob.NoActionBar" parent="Theme.Devmob">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>
