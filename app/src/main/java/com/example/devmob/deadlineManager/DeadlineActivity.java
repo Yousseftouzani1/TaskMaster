@@ -60,6 +60,7 @@ public class DeadlineActivity extends AppCompatActivity {
 
         loadDeadlineTasks();
     }
+    
 
     private void loadDeadlineTasks() {
         Query tasksquery=FirebaseDatabase.getInstance().getReference("tasks").orderByChild("isfinished").equalTo(false);
