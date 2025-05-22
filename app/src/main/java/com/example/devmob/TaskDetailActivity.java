@@ -57,7 +57,7 @@ public class TaskDetailActivity extends AppCompatActivity {
 
         // Populate views
         taskTitle.setText(title != null ? title : "No title");
-        taskStatus.setText("Status: " + (status != null ? status : "Unknown"));
+        taskStatus.setText("Status: " + (status != null ? status : "In Progress"));
         taskPriority.setText(priority != null ? priority : "Normal");
         taskDescription.setText(description != null ? description : "No description");
 

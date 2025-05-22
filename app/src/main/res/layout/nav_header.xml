@@ -2,32 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="176dp"
-    android:background="@color/colorPrimary"
+    android:background="@drawable/gradient_background"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:layout_width="128dp"
-        android:layout_height="69dp"
-        android:contentDescription="Profile picture"
-        android:src="@android:drawable/ic_menu_myplaces" />
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_app_logo"
+        android:contentDescription="App Logo" />
 
     <TextView
-        android:id="@+id/nav_header_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="task master"
+        android:text="TaskMaster"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="16sp"/>
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/nav_header_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="utilisateur@email.com"
-        android:textSize="14sp"/>
+        android:text="user@email.com" />
 
 </LinearLayout> 

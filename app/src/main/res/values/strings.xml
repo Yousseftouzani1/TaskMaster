@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Task Master</string>
-    <string name="navigation_drawer_open">Ouvrir le menu</string>
-    <string name="navigation_drawer_close">Fermer le menu</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="choose_priority">Choisir une priorité</string>
     <string name="choose_status">Choisir un statut</string>
     <string name="choose_recurrence">Fréquence</string>

@@ -32,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
         appName.startAnimation(fadeIn);
         catchphrase.startAnimation(fadeIn);
 
-        // Delay transition to MainActivity
+        // Delay transition to MainActivity (login)
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);

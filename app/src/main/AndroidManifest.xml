@@ -50,6 +50,10 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
+            android:name=".HomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Devmob.NoActionBar" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Devmob.NoActionBar">

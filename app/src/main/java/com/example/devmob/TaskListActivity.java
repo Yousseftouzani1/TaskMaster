@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class TaskListActivity extends AppCompatActivity {
+public class TaskListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -50,15 +50,20 @@ public class TaskListActivity extends AppCompatActivity {
     private FloatingActionButton fabAdd;
     private TextInputEditText searchEditText;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
         // --- find views ---
         toolbar        = findViewById(R.id.toolbar);
         drawerLayout   = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
+        navigationView = findViewById(R.id.nav_view);
         recyclerView   = findViewById(R.id.recyclerView);
         fabAdd         = findViewById(R.id.fab_add_task);
         searchEditText = findViewById(R.id.search_edit_text);
@@ -74,34 +79,10 @@ public class TaskListActivity extends AppCompatActivity {
         toggle.syncState();
 
         // --- populate navigation header ---
-        View headerView = navigationView.getHeaderView(0);
-        TextView headerName  = headerView.findViewById(R.id.nav_header_username);
-        TextView headerEmail = headerView.findViewById(R.id.nav_header_email);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String name  = user.getDisplayName();
-            String email = user.getEmail();
-            headerName .setText((name  != null && !name.isEmpty())  ? name  : "Task Master");
-            headerEmail.setText((email != null && !email.isEmpty()) ? email : "");
-        }
+        updateNavigationHeader();
 
         // --- handle navigation item clicks ---
-        navigationView.setNavigationItemSelectedListener(menuItem -> {
-            int id = menuItem.getItemId();
-            if (id == R.id.nav_home) {
-                Toast.makeText(this, "Accueil", Toast.LENGTH_SHORT).show();
-            } else if (id == R.id.nav_calendar) {
-                startActivity(new Intent(this, CalendarActivity.class));
-            } else if (id == R.id.nav_priority) {
-                startActivity(new Intent(this, AIResponseActivity.class));
-            } else if (id == R.id.nav_stats) {
-                startActivity(new Intent(this, StatsActivity.class));
-            } else if (id == R.id.nav_deadline) {
-                startActivity(new Intent(this, DeadlineActivity.class));
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        });
+        navigationView.setNavigationItemSelectedListener(this);
 
         // --- set up RecyclerView & adapter ---
         adapter = new TaskAdapter(task -> {
@@ -182,6 +163,16 @@ public class TaskListActivity extends AppCompatActivity {
         });
     }
 
+    private void updateNavigationHeader() {
+        View headerView = navigationView.getHeaderView(0);
+        TextView headerEmail = headerView.findViewById(R.id.nav_header_email);
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String email = user.getEmail();
+            headerEmail.setText((email != null && !email.isEmpty()) ? email : "");
+        }
+    }
+
     /** Filters displayed tasks by title or description in real time. */
     private void filterTasks(String query) {
         String lower = query.toLowerCase(Locale.getDefault());
@@ -200,6 +191,40 @@ public class TaskListActivity extends AppCompatActivity {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_tasks) {
+            // Already in tasks, just close drawer
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_calendar) {
+            startActivity(new Intent(this, CalendarActivity.class));
+        } else if (id == R.id.nav_deadline) {
+            startActivity(new Intent(this, DeadlineActivity.class));
+        } else if (id == R.id.nav_stats) {
+            startActivity(new Intent(this, StatsActivity.class));
+        } else if (id == R.id.nav_ai) {
+            startActivity(new Intent(this, AIResponseActivity.class));
+        } else if (id == R.id.nav_disconnect) {
+            disconnectUser();
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void disconnectUser() {
+        mAuth.signOut();
+        Toast.makeText(this, "Disconnected successfully", Toast.LENGTH_SHORT).show();
+        
+        // Navigate to login screen
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override
